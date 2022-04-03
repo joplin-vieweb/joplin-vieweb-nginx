@@ -8,7 +8,7 @@ then
 
     # start nginx until we have a certificate
     nginx -g 'daemon on;'
-    safety = 0
+    safety=0
     while [ ! -d "/etc/letsencrypt/live/${server_name}" ]
     do
         echo "waiting for certificate ..."
@@ -35,7 +35,7 @@ then
         nginx -s reload
     done &
 
-    safety2 = 0
+    safety2=0
     while [ true ]
     do
         nginx -g 'daemon off;'
