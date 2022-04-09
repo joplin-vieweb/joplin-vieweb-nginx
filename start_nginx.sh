@@ -1,17 +1,17 @@
 #!/bin/sh
 
-if [ ! -d "/etc/letsencrypt/live/${server_name}" ]
+if [ ! -d "/etc/letsencrypt/live/${CERT_DOMAIN}" ]
 then
-    echo "Let's start nginx to create certificates for ${server_name}"
-    envsubst '${server_name}' < /etc/nginx/conf.d/init_cert.conf.template > /etc/nginx/conf.d/init_cert
+    echo "Let's start nginx to create certificates for ${CERT_DOMAIN}"
+    envsubst '${CERT_DOMAIN}' < /etc/nginx/conf.d/init_cert.conf.template > /etc/nginx/conf.d/init_cert
     ln -sf /etc/nginx/conf.d/init_cert /etc/nginx/conf.d/default.conf
 
     # start nginx until we have a certificate
     nginx -g 'daemon on;'
     safety=0
-    while [ ! -d "/etc/letsencrypt/live/${server_name}" ]
+    while [ ! -d "/etc/letsencrypt/live/${CERT_DOMAIN}" ]
     do
-        echo "waiting for certificate ..."
+        echo "waiting for certificate for ${CERT_DOMAIN}..."
         sleep 2
         safety=$((safety + 1))
         if [ $safety -gt 60 ]; then break; fi
@@ -21,10 +21,10 @@ then
     sleep 5
 fi
 
-if [ -d "/etc/letsencrypt/live/${server_name}" ]
+if [ -d "/etc/letsencrypt/live/${CERT_DOMAIN}" ]
 then
-    echo "We have a certificate for ${server_name}, let's start nginx to serve joplin-vieweb"
-    envsubst '${DOMAIN}' < /etc/nginx/conf.d/joplin_vieweb.conf.template > /etc/nginx/conf.d/joplin_vieweb
+    echo "We have a certificate for ${CERT_DOMAIN}, let's start nginx to serve joplin-vieweb"
+    envsubst '${CERT_DOMAIN}' < /etc/nginx/conf.d/joplin_vieweb.conf.template > /etc/nginx/conf.d/joplin_vieweb
     ln -sf /etc/nginx/conf.d/joplin_vieweb /etc/nginx/conf.d/default.conf
 
     # loop to reload every 6h the certificate.
