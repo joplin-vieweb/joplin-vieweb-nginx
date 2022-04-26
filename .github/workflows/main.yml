@@ -23,6 +23,11 @@ jobs:
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+
+       # QEMU for arm docker image build.
+      - name: Docker Setup QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1.2.0
     
       - name: Docker meta
         id: meta
@@ -50,6 +55,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
+          platforms: ${{ steps.qemu.outputs.platforms }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
